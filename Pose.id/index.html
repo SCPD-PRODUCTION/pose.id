@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pose.id - Mix & Match</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <div id="cameraSection">
+            <div class="camera-box">
+                <video id="camera" autoplay playsinline></video>
+                <canvas id="camera_canvas"></canvas>
+                <canvas id="ar_canvas"></canvas>
+                <div id="timer">3</div>
+            </div>
+            <div class="controls">
+                <button class="layout-btn active" onclick="changeLayout(1, this)">Layout 1 (Single)</button>
+                <button class="layout-btn" onclick="changeLayout(3, this)">Layout 3 (Strip)</button>
+            </div>
+            <button class="btn-capture" onclick="startCapture()">📸 MULAI FOTO</button>
+        </div>
+
+        <div id="editSection" style="display:none;">
+            <h2>🎨 Desain Collage Kamu</h2>
+            
+            <div class="preview-container">
+                <canvas id="previewCanvas"></canvas>
+            </div>
+
+            <div class="editor-controls">
+                <h3>Pilih Background</h3>
+                <div id="bgSelector" class="scroll-x"></div>
+
+                <h3>Pilih Sticker / Overlay</h3>
+                <div id="stickerSelector" class="scroll-x"></div>
+            </div>
+
+            <button class="btn-download" onclick="downloadFinal()">💾 DOWNLOAD HASIL</button>
+            <button class="btn-retry" onclick="location.reload()">🔄 FOTO ULANG</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

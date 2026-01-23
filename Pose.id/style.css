@@ -1,0 +1,14 @@
+body { background: #fff0f5; font-family: sans-serif; text-align: center; }
+.camera-box { position: relative; width: 100%; max-width: 500px; margin: auto; background: #000; border-radius: 15px; overflow: hidden; }
+#camera, #camera_canvas, #ar_canvas { width: 100%; display: block; }
+#timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 100px; color: #fff; display: none; }
+
+.preview-container { margin: 20px auto; max-width: 300px; background: #fff; padding: 10px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+#previewCanvas { width: 100%; height: auto; display: block; }
+
+.scroll-x { display: flex; overflow-x: auto; gap: 10px; padding: 10px; background: #fff; margin: 10px 0; border-radius: 8px; }
+.thumb { height: 80px; cursor: pointer; border: 2px solid transparent; }
+.thumb:hover { border-color: #ff4d94; }
+
+.btn-download { background: #ff4d94; color: #fff; padding: 15px 30px; border: none; border-radius: 25px; font-weight: bold; cursor: pointer; margin: 10px; }
+.btn-retry { background: #666; color: #fff; padding: 15px 30px; border: none; border-radius: 25px; cursor: pointer; }
