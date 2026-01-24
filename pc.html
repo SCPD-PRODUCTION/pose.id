@@ -3,14 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pose.id -  Photo Booth Studio</title>
+    <title>Pose.id - PC Mode</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection"></script>
+    
     <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* Tombol melayang khusus untuk pindah ke mode HP */
+        .btn-to-mobile {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #FF1493; /* Warna pink gelap */
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+        .btn-to-mobile:hover {
+            transform: scale(1.05);
+            background: #ff4db2;
+        }
+    </style>
 </head>
 <body>
+
+    <button class="btn-to-mobile" onclick="window.location.href='index.html'">
+        📱 Switch to Mobile Mode
+    </button>
+
     <div class="container">
         <h1>📸 Pose.id</h1>
 
@@ -30,11 +62,11 @@
                     <div class="control-group">
                         <h3>📐 Pilih Layout</h3>
                         <div class="layout-buttons">
-                            <button class="layout-btn active" onclick="changeLayout(1, this)">Layout 1</button>
-                            <button class="layout-btn" onclick="changeLayout(2, this)">Layout 2</button>
-                            <button class="layout-btn" onclick="changeLayout(3, this)">Layout 3</button>
-                            <button class="layout-btn" onclick="changeLayout(4, this)">Layout 4</button>
-                            <button class="layout-btn" onclick="changeLayout(5, this)">Layout 5</button>
+                            <button class="layout-btn active" onclick="setLayout(1, this)">Layout 1</button>
+                            <button class="layout-btn" onclick="setLayout(2, this)">Layout 2</button>
+                            <button class="layout-btn" onclick="setLayout(3, this)">Layout 3</button>
+                            <button class="layout-btn" onclick="setLayout(4, this)">Layout 4</button>
+                            <button class="layout-btn" onclick="setLayout(5, this)">Layout 5</button>
                         </div>
                     </div>
                     <div class="control-group">
@@ -68,7 +100,7 @@
             </div>
         </div>
     </div>
+
     <script src="app.js"></script>
 </body>
 </html>
-
