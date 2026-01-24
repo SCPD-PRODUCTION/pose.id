@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pose.id - Mix & Match</title>
+    <title>Pose.id - 3D AR Photobooth</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,36 +15,47 @@
                 <canvas id="ar_canvas"></canvas>
                 <div id="timer">3</div>
             </div>
+
             <div class="controls">
-                <button class="layout-btn active" onclick="changeLayout(1, this)">Layout 1 (Single)</button>
-                <button class="layout-btn" onclick="changeLayout(3, this)">Layout 3 (Strip)</button>
+                <p>Pilih Layout:</p>
+                <div class="layout-tabs">
+                    <button class="layout-btn active" onclick="changeLayout(1, this)">L1</button>
+                    <button class="layout-btn" onclick="changeLayout(2, this)">L2</button>
+                    <button class="layout-btn" onclick="changeLayout(3, this)">L3</button>
+                    <button class="layout-btn" onclick="changeLayout(4, this)">L4</button>
+                    <button class="layout-btn" onclick="changeLayout(5, this)">L5</button>
+                </div>
+
+                <p>Pilih Filter AR:</p>
+                <div id="arSelector" class="scroll-x">
+                    </div>
             </div>
-            <button class="btn-capture" onclick="startCapture()">📸 MULAI FOTO</button>
+
+            <button class="btn-capture" onclick="startCapture()">📸 AMBIL FOTO</button>
         </div>
 
         <div id="editSection" style="display:none;">
-            <h2>🎨 Desain Collage Kamu</h2>
-            
             <div class="preview-container">
                 <canvas id="previewCanvas"></canvas>
             </div>
 
             <div class="editor-controls">
-                <h3>Pilih Background</h3>
+                <p>Pilih Background:</p>
                 <div id="bgSelector" class="scroll-x"></div>
 
-                <h3>Pilih Sticker / Overlay</h3>
+                <p>Pilih Sticker / Frame:</p>
                 <div id="stickerSelector" class="scroll-x"></div>
             </div>
 
-            <button class="btn-download" onclick="downloadFinal()">💾 DOWNLOAD HASIL</button>
-            <button class="btn-retry" onclick="location.reload()">🔄 FOTO ULANG</button>
+            <button class="btn-capture" onclick="downloadFinal()">💾 DOWNLOAD HASIL</button>
+            <button class="btn-capture" style="background:#666; margin-top:10px;" onclick="location.reload()">🔄 FOTO ULANG</button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
