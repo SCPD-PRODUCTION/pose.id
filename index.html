@@ -2,10 +2,9 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Pose.id — Photo Booth Studio</title>
+    <title>pose.id — 3D AR Photo Booth</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
-    
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
@@ -15,57 +14,38 @@
 
 <div class="app-container">
     <div class="glass-card">
-        <header class="header">
-            <h1 class="logo">📸 Pose.id</h1>
-            <p class="tagline">Abadikan Momen Spesial Anda!</p>
-        </header>
+        <h1 class="logo">📸 Pose.id</h1>
+        <p class="tagline">Photo Booth Online - Abadikan Momen Spesial Anda!</p>
 
-        <div class="booth-side">
-            <div class="booth-container" id="cameraSection">
-                <video id="video" autoplay muted playsinline></video>
-                <canvas id="canvas"></canvas>
-                <div id="timer" class="timer-overlay"></div>
-            </div>
-            
-            <div class="booth-container" id="editSection" style="display:none;">
-                <canvas id="previewCanvas"></canvas>
-            </div>
-
-            <div class="action-buttons">
-                <button id="snap" class="btn-main" onclick="startCapture()">📷 AMBIL FOTO</button>
-                <button id="downloadBtn" class="btn-download" style="display:none;" onclick="downloadFinal()">💾 DOWNLOAD STRIP</button>
-                <button id="resetBtn" class="btn-reset" style="display:none;" onclick="location.reload()">🔄 ULANGI</button>
-            </div>
+        <div class="booth">
+            <video id="video" autoplay muted playsinline style="display:none;"></video>
+            <canvas id="canvas"></canvas>
         </div>
 
-        <div class="control-side">
-            <div id="layoutControls" class="control-group">
-                <h3>📐 Pilih Layout</h3>
-                <div class="layout-grid">
-                    <button class="l-btn active" onclick="changeLayout(1, this)">1 Foto</button>
-                    <button class="l-btn active" onclick="changeLayout(2, this)">2 Foto</button>
-                    <button class="l-btn active" onclick="changeLayout(3, this)">3 Foto</button>
-                    <button class="l-btn active" onclick="changeLayout(4, this)">4 Kotak</button>
-                    <button class="l-btn active" onclick="changeLayout(5, this)">5 Strip</button>
-                </div>
+        <div class="controls">
+            <button id="snap" class="btn-main">📸 AMBIL FOTO</button>
+            <button id="download" class="btn-download" style="display:none;">⬇ DOWNLOAD HASIL</button>
+        </div>
+
+        <div class="control-panel">
+            <h3>📐 Pilih Layout</h3>
+            <div class="layout-grid">
+                <button class="l-btn active" data-val="1">1 Foto</button>
+                <button class="l-btn" data-val="2v">2 Foto</button>
+                <button class="l-btn" data-val="3v">3 Foto</button>
+                <button class="l-btn" data-val="4">4 Foto</button>
+                <button class="l-btn" data-val="5v">5 Foto</button>
             </div>
 
-            <div id="editorControls" style="display:none;">
-                <div class="control-group">
-                    <h3>🖼️ 1. Pilih Background</h3>
-                    <div id="bgSelector" class="scroll-x"></div>
-                </div>
-                <div class="control-group">
-                    <h3>🎨 2. Pilih Sticker / Frame</h3>
-                    <div id="stickerSelector" class="scroll-x"></div>
-                </div>
+            <h3>✨ AR Filter 3D</h3>
+            <div class="ar-filters">
+                <button data-ar="glasses" class="ar-btn">Kacamata</button>
+                <button data-ar="mustache" class="ar-btn">Kumis</button>
+                <button data-ar="none" class="ar-btn">None</button>
             </div>
 
-            <div class="control-group">
-                <h3>✨ Filter AR</h3>
-                <div class="ar-filters" id="arSelector">
-                    </div>
-            </div>
+            <h3>🖼️ Pilih Frame Motif</h3>
+            <div id="frame-options" class="scroll-x"></div>
         </div>
     </div>
 </div>
@@ -73,6 +53,3 @@
 <script type="module" src="app.js"></script>
 </body>
 </html>
-
-
-
