@@ -163,10 +163,19 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
         if(typeof loadARFilters === "function") loadARFilters();
     }, 1000);
-});
+}
 
-window.onload = () => {
-    // Fungsi bawaan Anda
-    if(typeof updateARSelector === "function") updateARSelector();
-    if(typeof updateAssetSelectors === "function") updateAssetSelectors();
+// Tambahkan di baris paling bawah app.js
+window.setLayout = (l, btn) => {
+    if (typeof window.changeLayout === "function") {
+        window.changeLayout(l, btn);
+    }
 };
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (typeof init === "function") init();
+    setTimeout(() => {
+        if (typeof updateARSelector === "function") updateARSelector();
+        if (typeof updateAssetSelectors === "function") updateAssetSelectors();
+    }, 500);
+});
