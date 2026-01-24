@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pose.id - Mobile Mode</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection"></script>
+    <link rel="stylesheet" href="style-hp.css">
+</head>
+<body>
+    <div class="container">
+        <button class="btn-switch-pc" onclick="window.location.href='pc.html'">
+            🖥️ Beralih ke Mode PC
+        </button>
+
+        <div class="header">
+            <h1>📸 Pose.id</h1>
+            <p>Photo Booth Online - Abadikan Momen Spesial Anda!</p>
+        </div>
+
+        <div id="cameraSection">
+            <div class="camera-wrapper">
+                <div class="camera-container">
+                    <video id="camera" autoplay playsinline></video>
+                    <canvas id="camera_canvas"></canvas>
+                    <canvas id="ar_canvas"></canvas>
+                    <div class="timer-overlay" id="timer"></div>
+                </div>
+                <button class="capture-btn" onclick="startCapture()">
+                    📷 AMBIL FOTO
+                </button>
+            </div>
+
+            <div class="mobile-controls">
+                <div class="control-card">
+                    <h3>📐 Pilih Layout</h3>
+                    <div class="layout-list">
+                        <button class="layout-item active" onclick="setLayout(1, this)">1 Foto</button>
+                        <button class="layout-item" onclick="setLayout(2, this)">2 Foto</button>
+                        <button class="layout-item" onclick="setLayout(3, this)">3 Foto</button>
+                        <button class="layout-item" onclick="setLayout(4, this)">4 Foto</button>
+                        <button class="layout-item" onclick="setLayout(5, this)">5 Foto</button>
+                    </div>
+                </div>
+
+                <div class="control-card">
+                    <h3>✨ Filter AR</h3>
+                    <div id="arSelector" class="scroll-x"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="editSection" style="display:none;">
+            <div class="camera-wrapper">
+                <div class="preview-container">
+                    <canvas id="previewCanvas"></canvas>
+                </div>
+                <button class="download-btn" onclick="downloadFinal()">💾 SIMPAN FOTO</button>
+                <button class="retry-btn" onclick="location.reload()">🔄 ULANGI</button>
+            </div>
+
+            <div class="mobile-controls">
+                <div class="control-card">
+                    <h3>🖼️ Pilih Background</h3>
+                    <div id="bgSelector" class="asset-grid scroll-x"></div>
+                </div>
+                <div class="control-card">
+                    <h3>🎨 Pilih Sticker</h3>
+                    <div id="stickerSelector" class="asset-grid scroll-x"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
