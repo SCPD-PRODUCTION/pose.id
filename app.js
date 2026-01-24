@@ -22,26 +22,29 @@ const config = {
 
 // 2. START APP
 async function init() {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
-    video.srcObject = stream;
-    video.onloadedmetadata = () => {
-        cameraCanvas.width = arCanvas.width = video.videoWidth;
-        cameraCanvas.height = arCanvas.height = video.videoHeight;
-        initThreeJS();
-        initFaceMesh();
-        loadARFilters();
-        renderLoop();
-    };
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
+        video.srcObject = stream;
+        video.onloadedmetadata = () => {
+            cameraCanvas.width = arCanvas.width = video.videoWidth;
+            cameraCanvas.height = arCanvas.height = video.videoHeight;
+            if (typeof initThreeJS === "function") initThreeJS();
+            if (typeof initFaceMesh === "function") initFaceMesh();
+            if (typeof loadARFilters === "function") loadARFilters();
+            renderLoop();
+        };
+    } catch (err) {
+        console.error("Kamera tidak dapat diakses:", err);
+    }
 }
-
-// ... (initThreeJS, initFaceMesh, loadARFilters tetap ada di file Anda) ...
 
 async function renderLoop() {
     ctx2D.save();
-    ctx2D.translate(cameraCanvas.width, 0); ctx2D.scale(-1, 1);
+    ctx2D.translate(cameraCanvas.width, 0); 
+    ctx2D.scale(-1, 1);
     ctx2D.drawImage(video, 0, 0);
     ctx2D.restore();
-    if (renderer) renderer.render(scene, camera3D);
+    if (renderer && scene && camera3D) renderer.render(scene, camera3D);
     requestAnimationFrame(renderLoop);
 }
 
@@ -49,12 +52,18 @@ async function renderLoop() {
 window.changeLayout = (l, btn) => {
     currentLayout = l;
     document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    if (btn) btn.classList.add('active');
+};
+
+// Alias untuk tombol HTML yang memanggil setLayout
+window.setLayout = (l, btn) => {
+    window.changeLayout(l, btn);
 };
 
 window.startCapture = () => {
     if (isCapturing) return;
-    capturedPhotos = []; isCapturing = true;
+    capturedPhotos = []; 
+    isCapturing = true;
     runCountdown();
 };
 
@@ -64,10 +73,15 @@ function runCountdown() {
     const timer = setInterval(() => {
         timerEl.innerText = count === 0 ? "📸" : count;
         if (count < 0) {
-            clearInterval(timer); timerEl.style.display = 'none';
+            clearInterval(timer); 
+            timerEl.style.display = 'none';
             takeSnapshot();
-            if (capturedPhotos.length < config[currentLayout].target) runCountdown();
-            else { isCapturing = false; openEditor(); }
+            if (capturedPhotos.length < config[currentLayout].target) {
+                runCountdown();
+            } else { 
+                isCapturing = false; 
+                openEditor(); 
+            }
         }
         count--;
     }, 1000);
@@ -75,14 +89,15 @@ function runCountdown() {
 
 function takeSnapshot() {
     const temp = document.createElement("canvas");
-    temp.width = 600; temp.height = 480;
+    temp.width = cameraCanvas.width; 
+    temp.height = cameraCanvas.height;
     const tCtx = temp.getContext("2d");
     tCtx.drawImage(cameraCanvas, 0, 0);
     tCtx.drawImage(arCanvas, 0, 0);
     capturedPhotos.push(temp.toDataURL('image/png'));
 }
 
-// 4. EDITOR LOGIC (Mix & Match)
+// 4. EDITOR LOGIC
 function openEditor() {
     document.getElementById("cameraSection").style.display = "none";
     document.getElementById("editSection").style.display = "block";
@@ -97,12 +112,13 @@ function openEditor() {
 
 function renderAssetList(id, folder, prefix) {
     const el = document.getElementById(id);
-    if(!el) return; // Tambahan aman agar tidak error
+    if(!el) return;
     el.innerHTML = "";
     for (let i = 1; i <= 10; i++) {
         const img = document.createElement("img");
         const path = `assets/${folder}/layout${currentLayout}/${prefix}${i}.png`;
-        img.src = path; img.className = "asset-thumb";
+        img.src = path; 
+        img.className = "asset-thumb";
         img.onclick = () => {
             if (prefix === 'bg') selectedBg = path; else selectedSticker = path;
             updatePreview();
@@ -114,23 +130,32 @@ function renderAssetList(id, folder, prefix) {
 
 async function updatePreview() {
     const canvas = document.getElementById("previewCanvas");
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
     const conf = config[currentLayout];
-    canvas.width = conf.canvasW; canvas.height = conf.canvasH;
+    canvas.width = conf.canvasW; 
+    canvas.height = conf.canvasH;
 
-    const loadImg = (src) => new Promise(res => { const i = new Image(); i.onload = () => res(i); i.src = src; });
+    const loadImg = (src) => new Promise(res => { 
+        const i = new Image(); 
+        i.onload = () => res(i); 
+        i.onerror = () => res(null);
+        i.src = src; 
+    });
 
     const bg = await loadImg(selectedBg);
-    ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+    if (bg) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
     for (let i = 0; i < capturedPhotos.length; i++) {
         const p = await loadImg(capturedPhotos[i]);
+        if (!p) continue;
         let x, y;
         if (conf.isGrid) {
             x = 50 + (i % 2 * conf.gap);
             y = conf.startY + (Math.floor(i / 2) * conf.gap);
         } else if (conf.isHorizontal) {
-            x = 50 + (i * conf.gap); y = conf.startY;
+            x = 50 + (i * conf.gap); 
+            y = conf.startY;
         } else {
             x = (canvas.width - conf.photoW) / 2;
             y = conf.startY + (i * conf.gap);
@@ -139,43 +164,24 @@ async function updatePreview() {
     }
 
     const st = await loadImg(selectedSticker);
-    ctx.drawImage(st, 0, 0, canvas.width, canvas.height);
+    if (st) ctx.drawImage(st, 0, 0, canvas.width, canvas.height);
 }
 
 window.downloadFinal = () => {
+    const canvas = document.getElementById("previewCanvas");
     const link = document.createElement('a');
     link.download = 'poseid.png';
-    link.href = document.getElementById("previewCanvas").toDataURL();
+    link.href = canvas.toDataURL();
     link.click();
-}
-
-// --- BAGIAN YANG SAYA TAMBAHKAN UNTUK FIX TOMBOL ---
-
-// Alias fungsi agar tombol setLayout di HTML bisa memanggil changeLayout di JS
-window.setLayout = (l, btn) => {
-    window.changeLayout(l, btn);
 };
 
-// Pastikan inisialisasi dipanggil setelah DOM benar-benar siap
+// INITIALIZATION
 document.addEventListener("DOMContentLoaded", () => {
     init();
-    // Tambahan jeda sedikit agar detector AR siap
-    setTimeout(() => {
-        if(typeof loadARFilters === "function") loadARFilters();
-    }, 1000);
-}
-
-// Tambahkan di baris paling bawah app.js
-window.setLayout = (l, btn) => {
-    if (typeof window.changeLayout === "function") {
-        window.changeLayout(l, btn);
-    }
-};
-
-document.addEventListener("DOMContentLoaded", () => {
-    if (typeof init === "function") init();
+    
+    // Sinkronisasi ulang untuk selector filter jika ada
     setTimeout(() => {
         if (typeof updateARSelector === "function") updateARSelector();
         if (typeof updateAssetSelectors === "function") updateAssetSelectors();
-    }, 500);
+    }, 1000);
 });
