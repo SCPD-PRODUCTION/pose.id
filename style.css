@@ -1,15 +1,21 @@
 body {
-    background-color: #fff0f5;
-    font-family: 'Segoe UI', sans-serif;
+    /* Warna Background Pink Peach Soft */
+    background-color: #fff0f5; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     justify-content: center;
     padding: 20px;
+    margin: 0;
 }
 
 .app-container {
     max-width: 500px;
     width: 100%;
     text-align: center;
+    background-color: #ffffff; /* Putih bersih untuk container */
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(255, 182, 193, 0.3); /* Shadow warna pink halus */
 }
 
 .camera-box {
@@ -20,6 +26,7 @@ body {
     border-radius: 15px;
     overflow: hidden;
     margin-bottom: 15px;
+    border: 4px solid #ffd1dc; /* Border warna peach pastel */
 }
 
 #camera, #camera_canvas, #ar_canvas {
@@ -37,47 +44,90 @@ body {
     font-weight: bold;
     display: none;
     text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+    z-index: 10;
+}
+
+/* Label Teks */
+p {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ff8fa3; /* Warna pink gelap untuk teks */
+    margin: 10px 0;
 }
 
 .controls { margin-bottom: 15px; }
 
+.layout-tabs {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
 .layout-btn {
-    padding: 10px 15px;
-    margin: 5px;
+    padding: 10px 18px;
     border: none;
-    border-radius: 20px;
-    background: #ddd;
+    border-radius: 25px;
+    background: #ffe4e1; /* Misty Rose / Peach sangat muda */
+    color: #ff4d94;
     cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
 }
 
 .layout-btn.active {
-    background: #ff4d94;
+    background: #ff4d94; /* Pink cerah saat aktif */
     color: white;
+    box-shadow: 0 4px 10px rgba(255, 77, 148, 0.3);
 }
 
 .btn-capture {
     width: 100%;
     padding: 15px;
-    background: #ff4d94;
+    background: #ff4d94; /* Warna Utama Pink Bright */
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
+    transition: transform 0.2s;
 }
 
+.btn-capture:active {
+    transform: scale(0.98);
+}
+
+/* Selector Aset (BG & Sticker) */
 .scroll-x {
     display: flex;
     overflow-x: auto;
-    gap: 10px;
+    gap: 12px;
     padding: 10px;
+    background: #fff5f7; /* Background area scroll peach muda */
+    border-radius: 10px;
 }
 
-.frame-opt {
+.frame-opt, .ar-thumb {
     width: 80px;
-    border-radius: 5px;
-    border: 2px solid transparent;
+    height: 80px;
+    border-radius: 8px;
+    border: 3px solid transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    background: white;
+    object-fit: cover;
 }
 
-.frame-opt:hover { border-color: #ff4d94; }
+.frame-opt.selected, .ar-thumb.selected {
+    border-color: #ff4d94;
+}
+
+/* Preview Collage */
+#previewCanvas {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    border: 5px solid #ffd1dc;
+}
