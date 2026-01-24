@@ -10,24 +10,31 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection"></script>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* CSS Tambahan khusus HP agar memanjang ke bawah */
-        .main-grid { grid-template-columns: 1fr !important; }
-        .layout-buttons { 
-            display: flex !important; 
-            flex-direction: column !important; 
-            gap: 10px; 
-        }
-        .layout-btn { width: 100% !important; padding: 15px !important; }
-        .btn-switch {
-            width: 100%; background: #333; color: white; border: none;
-            padding: 12px; border-radius: 10px; margin-bottom: 15px; font-weight: bold;
+        .main-grid { grid-template-columns: 1fr !important; display: flex; flex-direction: column; }
+        .layout-buttons { display: flex !important; flex-direction: column !important; gap: 10px; }
+        .layout-btn { width: 100% !important; padding: 15px !important; display: block !important; }
+        .switch-btn { width: 100%; padding: 12px; background: #333; color: white; border: none; border-radius: 10px; margin-bottom: 15px; font-weight: bold; cursor: pointer; }
+        .container { max-width: 480px; margin: 0 auto; padding: 15px; border-radius: 25px; }
+        
+        /* Gaya Tombol Foto Ulang */
+        .btn-reset {
+            width: 100%;
+            padding: 15px;
+            background: #888;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <button class="btn-switch" onclick="window.location.href='pc.html'">🖥️ Switch to PC Mode</button>
+        <button class="switch-btn" onclick="window.location.href='pc.html'">🖥️ Switch to PC Mode</button>
         <h1>📸 Pose.id</h1>
+        
         <div id="cameraSection">
             <div class="main-grid">
                 <div class="camera-section">
@@ -43,11 +50,11 @@
                     <div class="control-group">
                         <h3>📐 Pilih Layout</h3>
                         <div class="layout-buttons">
-                            <button class="layout-btn active" onclick="setLayout(1, this)">1 Foto</button>
-                            <button class="layout-btn" onclick="setLayout(2, this)">2 Foto</button>
-                            <button class="layout-btn" onclick="setLayout(3, this)">3 Foto</button>
-                            <button class="layout-btn" onclick="setLayout(4, this)">4 Foto</button>
-                            <button class="layout-btn" onclick="setLayout(5, this)">5 Foto</button>
+                            <button class="layout-btn active" onclick="setLayout(1, this)">Layout 1</button>
+                            <button class="layout-btn" onclick="setLayout(2, this)">Layout 2</button>
+                            <button class="layout-btn" onclick="setLayout(3, this)">Layout 3</button>
+                            <button class="layout-btn" onclick="setLayout(4, this)">Layout 4</button>
+                            <button class="layout-btn" onclick="setLayout(5, this)">Layout 5</button>
                         </div>
                     </div>
                     <div class="control-group">
@@ -57,21 +64,19 @@
                 </div>
             </div>
         </div>
+
         <div id="editSection" style="display:none;">
             <div class="main-grid">
                 <div class="camera-section">
-                    <div class="preview-container"><canvas id="previewCanvas"></canvas></div>
-                    <button class="download-all-btn" onclick="downloadFinal()">💾 DOWNLOAD</button>
+                    <div class="preview-container">
+                        <canvas id="previewCanvas"></canvas>
+                    </div>
+                    <button class="download-all-btn" onclick="downloadFinal()">💾 DOWNLOAD FOTO</button>
+                    <button class="btn-reset" onclick="location.reload()">🔄 FOTO ULANG (RESET)</button>
                 </div>
                 <div class="controls">
-                    <div class="control-group">
-                        <h3>🖼️ Background</h3>
-                        <div id="bgSelector" class="asset-grid scroll-x"></div>
-                    </div>
-                    <div class="control-group">
-                        <h3>🎨 Sticker</h3>
-                        <div id="stickerSelector" class="asset-grid scroll-x"></div>
-                    </div>
+                    <div class="control-group"><h3>🖼️ BG</h3><div id="bgSelector" class="asset-grid scroll-x"></div></div>
+                    <div class="control-group"><h3>🎨 Sticker</h3><div id="stickerSelector" class="asset-grid scroll-x"></div></div>
                 </div>
             </div>
         </div>
