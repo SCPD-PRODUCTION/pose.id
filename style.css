@@ -1,45 +1,86 @@
-/* Container scroll filter - dibuat lebih pendek */
+:root {
+    --peach: #FFDAB9;
+    --pink: #FFB6C1;
+    --dark-pink: #FF1493;
+}
+
+body {
+    background: linear-gradient(135deg, var(--pink) 0%, var(--peach) 100%);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0; padding: 20px;
+    display: flex; justify-content: center;
+}
+
+.container {
+    width: 100%; max-width: 1100px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 25px; padding: 25px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+/* PEMBAGIAN LAYOUT: KIRI (KAMERA) | KANAN (KONTROL) */
+.main-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px; /* Panel kanan pas 320px */
+    gap: 25px;
+    align-items: start;
+}
+
+/* Area Kamera (Biar tidak menutupi layar) */
+.camera-container {
+    position: relative; width: 100%; aspect-ratio: 4/3;
+    background: #1a1a1a; border-radius: 20px;
+    border: 4px solid white; overflow: hidden;
+}
+
+#camera_canvas, #ar_canvas { position: absolute; width: 100%; height: 100%; top:0; left:0; }
+
+/* PANEL KONTROL (SIDEBAR KANAN) */
+.controls { display: flex; flex-direction: column; gap: 15px; }
+
+.control-group {
+    background: white; padding: 15px; border-radius: 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+}
+
+.control-group h3 {
+    margin: 0 0 12px 0; font-size: 13px; color: var(--dark-pink);
+    text-transform: uppercase; letter-spacing: 1px;
+}
+
+/* TOMBOL LAYOUT: RAPI DALAM GRID */
+.layout-buttons {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+
+.layout-btn {
+    padding: 10px; border: 2px solid var(--pink); background: white;
+    border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s;
+}
+
+.layout-btn:hover { background: var(--pink); color: white; }
+.layout-btn.active { background: var(--dark-pink); color: white; border-color: var(--dark-pink); }
+
+/* FILTER AR: KECIL DAN RAPI */
 .scroll-x {
-    display: flex;
-    gap: 8px; /* Jarak antar thumbnail diperkecil */
-    overflow-x: auto;
-    padding: 10px 5px;
-    background: #f9f9f9; /* Background tipis agar list terlihat jelas */
-    border-radius: 12px;
-    scrollbar-width: thin; /* Untuk Firefox */
+    display: flex; gap: 8px; overflow-x: auto; padding: 5px 0;
 }
 
-/* Custom Scrollbar agar tidak tebal */
-.scroll-x::-webkit-scrollbar {
-    height: 4px;
-}
-.scroll-x::-webkit-scrollbar-thumb {
-    background: var(--soft-pink);
-    border-radius: 10px;
+.asset-thumb {
+    width: 45px; height: 45px; /* Ukuran diperkecil agar tidak 'raksasa' */
+    border-radius: 8px; object-fit: cover;
+    border: 2px solid #eee; cursor: pointer; flex-shrink: 0;
 }
 
-/* Thumbnail Filter - Diperkecil ukurannya */
-.asset-thumb, .ar-thumb {
-    width: 50px;    /* Ukuran dikecilkan dari 70px/80px ke 50px */
-    height: 50px;   /* Ukuran dikecilkan */
-    object-fit: cover;
-    border-radius: 8px; /* Corner radius disesuaikan agar tetap manis */
-    border: 2px solid #eee;
-    flex-shrink: 0;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    background: white;
+.asset-thumb:hover { transform: scale(1.1); }
+.asset-thumb.selected { border-color: var(--dark-pink); box-shadow: 0 0 8px rgba(255, 20, 147, 0.3); }
+
+/* Tombol Aksi */
+.capture-btn {
+    width: 100%; padding: 15px; border-radius: 12px; border: none;
+    background: var(--dark-pink); color: white; font-weight: bold;
+    cursor: pointer; transition: 0.3s;
 }
 
-/* Efek saat kursor di atas thumbnail */
-.asset-thumb:hover {
-    transform: scale(1.1);
-    border-color: var(--soft-pink);
-}
-
-/* State saat filter dipilih */
-.asset-thumb.selected {
-    border-color: var(--dark-pink);
-    border-width: 3px;
-    box-shadow: 0 0 8px rgba(255, 20, 147, 0.2);
-}
+.capture-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
