@@ -35,7 +35,10 @@ async function init() {
             cameraCanvas.height = arCanvas.height = video.videoHeight;
             if (typeof initThreeJS === "function") initThreeJS();
             if (typeof initFaceMesh === "function") initFaceMesh();
-            if (typeof loadARFilters === "function") loadARFilters();
+            // Load filter default jika diinginkan
+            if (typeof loadARFilters === "function") {
+                // Contoh: loadARFilters(PATH_3D + 'filter1.glb'); 
+            }
             renderLoop();
         };
     } catch (err) {
@@ -68,11 +71,12 @@ window.loadARFilters = (path) => {
 };
 
 window.updateARSelector = () => {
-    const el = document.getElementById("arFilterSelector"); // Pastikan ID ini ada di HTML Anda
+    // Menyesuaikan dengan ID "arSelector" di HTML Anda
+    const el = document.getElementById("arSelector"); 
     if (!el) return;
     el.innerHTML = "";
 
-    for (let i = 1; i <= TOTAL_FILTERS; i++) {
+    for (let i = 10; i <= TOTAL_FILTERS; i++) {
         const img = document.createElement("img");
         const modelPath = `${PATH_3D}filter${i}.glb`;
         const previewPath = `${PATH_PREVIEW}filter${i}.png`;
@@ -80,10 +84,10 @@ window.updateARSelector = () => {
         img.src = previewPath;
         img.className = "asset-thumb";
         
-        // Begitu klik gambar, langsung panggil model 3D-nya
+        // Klik gambar langsung aktifkan model 3D
         img.onclick = () => {
             window.loadARFilters(modelPath);
-            document.querySelectorAll('#arFilterSelector .asset-thumb').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('#arSelector .asset-thumb').forEach(b => b.classList.remove('active'));
             img.classList.add('active');
         };
 
@@ -205,7 +209,6 @@ async function updatePreview() {
             y = conf.startY + (i * conf.gap);
         }
 
-        // LOGIKA CENTER CROP (Mencegah Gepeng)
         const imgW = p.width;
         const imgH = p.height;
         const targetW = conf.photoW;
