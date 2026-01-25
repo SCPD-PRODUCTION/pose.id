@@ -1,149 +1,79 @@
-:root {
-    --pink: #FF1493;
-    --light-pink: #FFB6C1;
-    --bg-grad: linear-gradient(180deg, #FFB5C5 0%, #FFE4E1 100%);
+/* style-hp.css - Mobile Version */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    background: var(--bg-grad);
-    font-family: 'sans-serif';
-    margin: 0;
+    background-color: #ffffff;
     padding: 10px;
-    min-height: 100vh;
 }
 
 .container {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 35px;
-    padding: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    width: 100%;
+    padding: 10px;
 }
 
-.btn-switch-pc {
+/* Tampilan Kamera HP tegak lurus */
+.viewfinder {
     width: 100%;
-    background: #333;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 15px;
-    font-weight: bold;
-    margin-bottom: 20px;
-}
-
-.header h1 { color: var(--pink); text-align: center; margin: 0; }
-.header p { color: var(--light-pink); text-align: center; font-size: 13px; margin-bottom: 20px; }
-
-/* Camera UI */
-.camera-container, .preview-container {
-    width: 100%;
-    aspect-ratio: 4/3;
+    aspect-ratio: 3/4; /* Lebih cocok untuk potret HP */
     background: #000;
-    border-radius: 25px;
-    overflow: hidden;
+    border-radius: 15px;
     position: relative;
+    border: 4px solid #FF1493;
 }
 
-#camera, #camera_canvas, #ar_canvas {
-    position: absolute; width: 100%; height: 100%; object-fit: cover;
+/* Selector Horizontal (Scroll ke samping) */
+.selector-container {
+    display: flex;
+    overflow-x: scroll;
+    gap: 12px;
+    padding: 15px 5px;
+    -webkit-overflow-scrolling: touch;
 }
 
-.capture-btn, .download-btn {
-    width: 100%;
-    background: var(--pink);
-    color: white;
-    border: none;
-    padding: 15px;
-    border-radius: 20px;
-    font-weight: bold;
-    font-size: 16px;
-    margin-top: 15px;
-    box-shadow: 0 5px 15px rgba(255, 20, 147, 0.3);
+.asset-thumb {
+    min-width: 75px;
+    height: 75px;
+    border-radius: 50%; /* Bulat agar estetik di HP */
+    object-fit: cover;
+    border: 3px solid #eee;
 }
 
-/* Control Panel */
-.mobile-controls {
-    margin-top: 25px;
+.asset-thumb.selected {
+    border-color: #FF1493;
+}
+
+/* Layout Editor Menumpuk Vertikal */
+.editor-layout {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-.control-card {
-    background: #FFF0F5;
-    padding: 15px;
-    border-radius: 20px;
-    margin-bottom: 10px;
-}
-
-.control-card h3 {
-    margin: 0 0 12px 0;
-    font-size: 14px;
-    color: var(--pink);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* Layout List */
-.layout-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.layout-btn {
-    background: white;
-    border: 2px solid transparent;
-    padding: 12px;
-    border-radius: 12px;
-    font-weight: bold;
-    color: #555;
-    text-align: center;
-    width: 100%;
-}
-
-.layout-btn.active {
-    background: var(--pink);
-    color: white;
-}
-
-/* --- FILTER AR THUMBNAILS (TAMBAHAN BARU) --- */
-.scroll-x {
-    display: flex;
-    overflow-x: auto;
-    gap: 12px;
-    padding: 10px 5px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Hide scrollbar Firefox */
-}
-
-.scroll-x::-webkit-scrollbar {
-    display: none; /* Hide scrollbar Chrome/Safari */
-}
-
-.asset-thumb {
-    width: 75px;
-    height: 75px;
-    object-fit: cover;
+canvas#previewCanvas {
+    width: 100% !important;
+    height: auto !important;
     border-radius: 15px;
-    border: 3px solid #fff;
-    flex-shrink: 0;
-    background: #fff;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    transition: all 0.2s ease;
 }
 
-.asset-thumb.selected {
-    border-color: var(--pink);
-    transform: scale(1.05);
+/* Tombol Download Besar di Bawah */
+.download-all-btn {
+    position: sticky;
+    bottom: 20px;
+    width: 100%;
+    background: #FF1493;
+    color: white;
+    padding: 18px;
+    border-radius: 50px; /* Rounded pill style */
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    box-shadow: 0 8px 20px rgba(255, 20, 147, 0.4);
 }
 
-.retry-btn { 
-    width: 100%; 
-    background: #888; 
-    color: white; 
-    border: none; 
-    padding: 10px; 
-    border-radius: 15px; 
-    margin-top: 10px; 
+#timer {
+    font-size: 120px;
 }
