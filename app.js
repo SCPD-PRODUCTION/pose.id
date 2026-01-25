@@ -23,50 +23,62 @@ const config = {
     5: { canvasW: 500, canvasH: 1800, photoW: 400, photoH: 300, startY: 100, gap: 320, target: 5 }
 };
 
-// --- 1. SETUP ENGINE 3D ---
+// --- OPTIMASI: Inisialisasi Engine 3D Ringan ---
 function initThreeJS() {
     scene = new THREE.Scene();
-    camera3D = new THREE.PerspectiveCamera(75, video.videoWidth / video.videoHeight, 0.1, 1000);
-    renderer = new THREE.WebGLRenderer({ canvas: arCanvas, alpha: true, preserveDrawingBuffer: true }); // Penting: preserveDrawingBuffer agar bisa di-capture
+    // FOV diperkecil agar objek lebih mudah terlihat
+    camera3D = new THREE.PerspectiveCamera(50, video.videoWidth / video.videoHeight, 0.1, 1000);
+    
+    renderer = new THREE.WebGLRenderer({ 
+        canvas: arCanvas, 
+        alpha: true, 
+        preserveDrawingBuffer: true,
+        antialias: false // Dimatikan agar lebih ringan di HP/PC kentang
+    });
+    renderer.setPixelRatio(0.8); // Kualitas diturunkan sedikit agar FPS naik
     renderer.setSize(video.videoWidth, video.videoHeight);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
     scene.add(ambientLight);
 }
 
-// --- 2. SETUP FACE TRACKING ---
+// --- OPTIMASI: Load FaceMesh Lebih Cepat ---
 async function initFaceMesh() {
     const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
     detector = await faceLandmarksDetection.createDetector(model, {
         runtime: 'tfjs',
+        refineLandmarks: false, // Dimatikan agar lebih ringan
         solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh'
     });
 }
 
-// --- 3. TRACKING LOGIC ---
+// --- LOGIKA POSISI 3D (DIBENERIN) ---
 async function updateFaceTracking() {
-    if (!detector || !video || !filterMesh) return;
-    const faces = await detector.estimateFaces(video);
+    if (!detector || !video || !filterMesh || isCapturing) return;
+    
+    const faces = await detector.estimateFaces(video, { flipHorizontal: false });
 
     if (faces.length > 0) {
         const face = faces[0];
-        const nose = face.keypoints[1];
+        const nose = face.keypoints[1]; // Titik pusat hidung
         
-        // Posisi filter mengikuti hidung
+        // Konversi koordinat (0 ke 1)
         const x = (nose.x / video.videoWidth) * 2 - 1;
         const y = -(nose.y / video.videoHeight) * 2 + 1;
         
-        filterMesh.position.set(x * 4, y * 3, -5); 
+        // PENTING: Skala dan posisi Z disesuaikan agar muncul di depan mata
+        filterMesh.position.set(x * 3.5, y * 2.5, -5); 
         filterMesh.visible = true;
     } else {
         filterMesh.visible = false;
     }
 }
 
-// --- 4. CORE CAMERA & RENDER ---
 async function init() {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { width: { ideal: 1280 }, height: { ideal: 720 } } 
+        });
         video.srcObject = stream;
         video.onloadedmetadata = async () => {
             cameraCanvas.width = arCanvas.width = video.videoWidth;
@@ -78,41 +90,33 @@ async function init() {
     } catch (err) { console.error(err); }
 }
 
-function renderLoop() {
+let lastFrameTime = 0;
+function renderLoop(now) {
+    // Jalankan render kamera 2D
     ctx2D.save();
     ctx2D.translate(cameraCanvas.width, 0); 
     ctx2D.scale(-1, 1);
     ctx2D.drawImage(video, 0, 0);
     ctx2D.restore();
 
-    if (detector) updateFaceTracking();
+    // OPTIMASI: Batasi tracking hanya setiap 30ms (sekitar 30fps) agar tidak ngelag
+    if (now - lastFrameTime > 30) {
+        updateFaceTracking();
+        lastFrameTime = now;
+    }
+
     if (renderer && scene && camera3D) renderer.render(scene, camera3D);
-    
     requestAnimationFrame(renderLoop);
 }
 
-// --- 5. SNAPSHOT LOGIC (INI YANG MEMBUAT AR IKUT KE-CAPTURE) ---
-function takeSnapshot() {
-    const temp = document.createElement("canvas");
-    temp.width = cameraCanvas.width; 
-    temp.height = cameraCanvas.height;
-    const tCtx = temp.getContext("2d");
-
-    // 1. Gambar orangnya dulu
-    tCtx.drawImage(cameraCanvas, 0, 0);
-    // 2. Gambar filternya di atas orangnya
-    tCtx.drawImage(arCanvas, 0, 0);
-
-    capturedPhotos.push(temp.toDataURL('image/png'));
-}
-
-// --- 6. FITUR LAMA (Layout, Editor, Selector) ---
+// --- FUNGSI LAINNYA TETAP SAMA ---
 window.loadARFilters = (path) => {
     const loader = new THREE.GLTFLoader();
     loader.load(path, (gltf) => {
         if (filterMesh) scene.remove(filterMesh); 
         filterMesh = gltf.scene;
-        filterMesh.scale.set(2, 2, 2); 
+        // Jaga-jaga jika model aslinya terlalu kecil, kita besarkan di sini
+        filterMesh.scale.set(3, 3, 3); 
         scene.add(filterMesh);
     });
 };
@@ -127,9 +131,10 @@ window.updateARSelector = () => {
         img.className = "asset-thumb";
         img.onclick = () => {
             window.loadARFilters(`${PATH_3D}filter${i}.glb`);
-            document.querySelectorAll('.asset-thumb').forEach(b => b.classList.remove('selected'));
+            document.querySelectorAll('#arSelector .asset-thumb').forEach(b => b.classList.remove('selected'));
             img.classList.add('selected');
         };
+        img.onerror = () => img.style.display = 'none';
         el.appendChild(img);
     }
 };
@@ -160,6 +165,16 @@ function runCountdown() {
         }
         count--;
     }, 1000);
+}
+
+function takeSnapshot() {
+    const temp = document.createElement("canvas");
+    temp.width = cameraCanvas.width; 
+    temp.height = cameraCanvas.height;
+    const tCtx = temp.getContext("2d");
+    tCtx.drawImage(cameraCanvas, 0, 0);
+    tCtx.drawImage(arCanvas, 0, 0);
+    capturedPhotos.push(temp.toDataURL('image/png'));
 }
 
 function openEditor() {
@@ -206,7 +221,6 @@ async function updatePreview() {
         if (!p) continue;
         let x = (canvas.width - conf.photoW) / 2;
         let y = conf.startY + (i * conf.gap);
-        // Jika layout horizontal/grid, sesuaikan x & y (logika config Anda)
         ctx.drawImage(p, x, y, conf.photoW, conf.photoH);
     }
     const st = await loadImg(selectedSticker);
