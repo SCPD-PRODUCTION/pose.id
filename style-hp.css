@@ -1,29 +1,17 @@
-/* Styling Thumbnail Filter AR di HP */
-.scroll-x { 
-    display: flex; 
-    overflow-x: auto; 
-    gap: 12px; 
-    padding: 10px 0;
-    -webkit-overflow-scrolling: touch; /* Scroll halus di iPhone */
+:root {
+    --pink: #FF1493;
+    --light-pink: #FFB6C1;
+    --bg-grad: linear-gradient(180deg, #FFB5C5 0%, #FFE4E1 100%);
 }
-
-.scroll-x::-webkit-scrollbar { display: none; } /* Sembunyikan scrollbar di HP */
-
-.ar-thumb, .asset-thumb {
-    width: 70px; 
-    height: 70px; 
-    border-radius: 50%; /* Dibuat bulat agar estetik di HP */
-    background: white;
-    flex-shrink: 0; 
-    cursor: pointer; 
-    border: 3px solid #eee;
-    object-fit: cover;
-    transition: 0.2s;
-}
-
-/* State saat filter dipilih di HP */
-.ar-thumb.selected, .asset-thumb.selected {
-    border-color: var(--pink);
-    box-shadow: 0 0 12px rgba(255, 20, 147, 0.4);
-    transform: scale(1.1);
-}
+body { background: var(--bg-grad); font-family: sans-serif; margin: 0; padding: 10px; }
+.container { background: rgba(255, 255, 255, 0.9); border-radius: 35px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+.btn-switch-pc { width: 100%; background: #333; color: white; border: none; padding: 12px; border-radius: 15px; margin-bottom: 20px; font-weight: bold; }
+.camera-container { width: 100%; aspect-ratio: 4/3; background: #000; border-radius: 25px; overflow: hidden; position: relative; }
+#camera_canvas, #ar_canvas { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+.scroll-x { display: flex; overflow-x: auto; gap: 10px; padding: 10px 5px; scrollbar-width: none; }
+.asset-thumb { width: 75px; height: 75px; object-fit: cover; border-radius: 15px; border: 3px solid #fff; flex-shrink: 0; background: #fff; }
+.asset-thumb.selected { border-color: var(--pink); transform: scale(1.05); }
+.capture-btn { width: 100%; background: var(--pink); color: white; border: none; padding: 15px; border-radius: 20px; font-weight: bold; margin-top: 15px; }
+.control-card { background: #FFF0F5; padding: 15px; border-radius: 20px; margin-top: 15px; }
+.layout-btn { background: white; border: none; padding: 12px; border-radius: 12px; margin-bottom: 5px; width: 100%; font-weight: bold; }
+.layout-btn.active { background: var(--pink); color: white; }
