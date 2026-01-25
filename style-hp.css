@@ -60,7 +60,7 @@ body {
     box-shadow: 0 5px 15px rgba(255, 20, 147, 0.3);
 }
 
-/* Control Panel Memanjang Ke Bawah (Sesuai Foto 2) */
+/* Control Panel */
 .mobile-controls {
     margin-top: 25px;
     display: flex;
@@ -72,6 +72,7 @@ body {
     background: #FFF0F5;
     padding: 15px;
     border-radius: 20px;
+    margin-bottom: 10px;
 }
 
 .control-card h3 {
@@ -83,13 +84,14 @@ body {
     gap: 8px;
 }
 
-.layout-list {
+/* Layout List */
+.layout-buttons {
     display: flex;
-    flex-direction: column; /* Ini yang membuat memanjang ke bawah */
+    flex-direction: column;
     gap: 8px;
 }
 
-.layout-item {
+.layout-btn {
     background: white;
     border: 2px solid transparent;
     padding: 12px;
@@ -97,12 +99,51 @@ body {
     font-weight: bold;
     color: #555;
     text-align: center;
+    width: 100%;
 }
 
-.layout-item.active {
+.layout-btn.active {
     background: var(--pink);
     color: white;
 }
 
-.scroll-x { display: flex; overflow-x: auto; gap: 10px; padding: 5px; }
-.retry-btn { width: 100%; background: #888; color: white; border: none; padding: 10px; border-radius: 15px; margin-top: 10px; }
+/* --- FILTER AR THUMBNAILS (TAMBAHAN BARU) --- */
+.scroll-x {
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    padding: 10px 5px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Hide scrollbar Firefox */
+}
+
+.scroll-x::-webkit-scrollbar {
+    display: none; /* Hide scrollbar Chrome/Safari */
+}
+
+.asset-thumb {
+    width: 75px;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 15px;
+    border: 3px solid #fff;
+    flex-shrink: 0;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+}
+
+.asset-thumb.selected {
+    border-color: var(--pink);
+    transform: scale(1.05);
+}
+
+.retry-btn { 
+    width: 100%; 
+    background: #888; 
+    color: white; 
+    border: none; 
+    padding: 10px; 
+    border-radius: 15px; 
+    margin-top: 10px; 
+}
