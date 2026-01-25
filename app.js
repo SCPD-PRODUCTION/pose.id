@@ -26,19 +26,27 @@ const config = {
 // --- 1. INISIALISASI ENGINE 3D (THREE.JS) ---
 function initThreeJS() {
     scene = new THREE.Scene();
-    camera3D = new THREE.PerspectiveCamera(50, video.videoWidth / video.videoHeight, 0.1, 1000);
     
+    // Perbaikan Camera 3D agar FOV pas dengan tracking
+    camera3D = new THREE.PerspectiveCamera(50, video.videoWidth / video.videoHeight, 0.1, 1000);
+    camera3D.position.z = 5;
+
     renderer = new THREE.WebGLRenderer({ 
         canvas: arCanvas, 
         alpha: true, 
-        preserveDrawingBuffer: true, // WAJIB: Agar AR bisa ikut difoto
-        antialias: false 
+        preserveDrawingBuffer: true, 
+        antialias: true 
     });
-    renderer.setPixelRatio(0.8); 
+    renderer.setPixelRatio(window.devicePixelRatio); 
     renderer.setSize(video.videoWidth, video.videoHeight);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.8);
+    // Pencahayaan yang lebih terang agar model 3D tidak hitam
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2.0);
     scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    dirLight.position.set(0, 1, 2);
+    scene.add(dirLight);
 }
 
 // --- 2. INISIALISASI FACE TRACKING (AI) ---
@@ -46,12 +54,12 @@ async function initFaceMesh() {
     const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
     detector = await faceLandmarksDetection.createDetector(model, {
         runtime: 'tfjs',
-        refineLandmarks: false,
+        refineLandmarks: true, // Diaktifkan agar tracking mata lebih presisi
         solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh'
     });
 }
 
-// --- 3. UPDATE POSISI FILTER PADA WAJAH ---
+// --- 3. UPDATE POSISI FILTER PADA WAJAH (LOGIKA BARU YANG DISATUKAN) ---
 async function updateFaceTracking() {
     if (!detector || !video || !filterMesh || isCapturing) return;
     
@@ -61,17 +69,26 @@ async function updateFaceTracking() {
         const face = faces[0];
         const nose = face.keypoints[1]; 
         
+        // Konversi Koordinat normalized (-1 ke 1)
         const x = (nose.x / video.videoWidth) * 2 - 1;
         const y = -(nose.y / video.videoHeight) * 2 + 1;
         
-        // Posisi dan Skala (Skala 4 agar pas menutupi wajah)
-        filterMesh.position.set(x * 3.5, y * 2.5, -5); 
+        // Update Posisi: Faktor pengali disesuaikan agar model menempel di hidung
+        filterMesh.position.set(x * 3.8, y * 2.8, 0); 
         filterMesh.visible = true;
 
-        // Rotasi Berdasarkan Mata
+        // Hitung Rotasi & Skala Berdasarkan Mata
         const leftEye = face.keypoints[33];
         const rightEye = face.keypoints[263];
+        
+        // Rotasi Z (Miring Kepala)
         filterMesh.rotation.z = Math.atan2(rightEye.y - leftEye.y, rightEye.x - leftEye.x);
+
+        // Skala Dinamis: Filter membesar jika wajah mendekat
+        const dist = Math.sqrt(Math.pow(rightEye.x - leftEye.x, 2) + Math.pow(rightEye.y - leftEye.y, 2));
+        const finalScale = (dist / 100) * 3.5; // Angka 3.5 disesuaikan dengan besar filter kamu
+        filterMesh.scale.set(finalScale, finalScale, finalScale);
+
     } else {
         filterMesh.visible = false;
     }
@@ -103,8 +120,8 @@ function renderLoop(now) {
     ctx2D.drawImage(video, 0, 0);
     ctx2D.restore();
 
-    // Optimasi: Tracking setiap 40ms (~25 FPS) agar ringan
-    if (now - lastTracking > 40) {
+    // Jalankan tracking
+    if (now - lastTracking > 30) { 
         updateFaceTracking();
         lastTracking = now;
     }
@@ -119,9 +136,8 @@ window.loadARFilters = (path) => {
     loader.load(path, (gltf) => {
         if (filterMesh) scene.remove(filterMesh); 
         filterMesh = gltf.scene;
-        filterMesh.scale.set(4, 4, 4); // Diperbesar sesuai kebutuhan wajah
         scene.add(filterMesh);
-    });
+    }, undefined, (e) => console.error("Load Filter Gagal:", e));
 };
 
 window.updateARSelector = () => {
@@ -169,8 +185,8 @@ function takeSnapshot() {
     temp.width = cameraCanvas.width; 
     temp.height = cameraCanvas.height;
     const tCtx = temp.getContext("2d");
-    tCtx.drawImage(cameraCanvas, 0, 0); // Foto orang
-    tCtx.drawImage(arCanvas, 0, 0);      // Foto filter
+    tCtx.drawImage(cameraCanvas, 0, 0); 
+    tCtx.drawImage(arCanvas, 0, 0);      
     capturedPhotos.push(temp.toDataURL('image/png'));
 }
 
